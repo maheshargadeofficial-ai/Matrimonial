@@ -47,7 +47,7 @@ jobs:
           ./gradlew assembleDebug --no-daemon --stacktrace
           
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: saksham-saathi-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
