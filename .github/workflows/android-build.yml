@@ -28,7 +28,9 @@ jobs:
         uses: android-actions/setup-android@v2
         
       - name: Install dependencies
-        run: yarn install
+        run: |
+          yarn install
+          yarn list --pattern capacitor
         
       - name: Build React app
         run: yarn build
@@ -42,7 +44,7 @@ jobs:
         run: |
           cd android
           chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon --stacktrace
           
       - name: Upload APK
         uses: actions/upload-artifact@v3
