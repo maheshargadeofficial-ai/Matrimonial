@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Saksham Saathi</string>
+    <string name="title_activity_main">Saksham Saathi</string>
+    <string name="package_name">com.sakshamrishte.app</string>
+    <string name="custom_url_scheme">com.sakshamrishte.app</string>
+</resources>
