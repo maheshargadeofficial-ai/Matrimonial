@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'yarn'
           
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -26,36 +27,58 @@ jobs:
           
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        
+      
+      - name: Check Node and Yarn versions
+        run: |
+          node --version
+          yarn --version
+          
       - name: Install dependencies
         run: |
-          yarn install
-          yarn list --pattern capacitor
+          echo "Installing dependencies..."
+          yarn install --frozen-lockfile || yarn install
+          echo "Dependencies installed successfully!"
         
       - name: Build React app
-        run: yarn build
+        run: |
+          echo "Building React app..."
+          CI=false yarn build
+          echo "React build completed!"
         env:
           GENERATE_SOURCEMAP: false
+          CI: false
+          
+      - name: Verify build output
+        run: |
+          echo "Checking build directory..."
+          ls -la build/
+          echo "Build directory verified!"
           
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: |
+          echo "Syncing Capacitor..."
+          npx cap sync android
+          echo "Capacitor sync completed!"
+        
+      - name: Grant execute permission for gradlew
+        run: chmod +x android/gradlew
         
       - name: Build Android APK
         run: |
+          echo "Building Android APK..."
           cd android
-          chmod +x ./gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
+          echo "APK build completed!"
+          
+      - name: Verify APK
+        run: |
+          echo "Checking APK file..."
+          ls -la android/app/build/outputs/apk/debug/
+          echo "APK verified!"
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: saksham-saathi-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: android/app/build/outputs/apk/debug/app-debug.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          if-no-files-found: error
